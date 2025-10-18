@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Clock, CheckCircle2 } from "lucide-react";
 import { Task } from "../hooks/useTaskManager";
+import { useRouter } from "next/navigation";
 
 export default function TimerCard({
   queue,
@@ -17,6 +18,7 @@ export default function TimerCard({
   const [timer, setTimer] = useState(1200);
   const [isRunning, setIsRunning] = useState(false);
   const currentTask = queue[0];
+  const route = useRouter();
 
   useEffect(() => {
     if (!isRunning || !currentTask) return;
@@ -41,6 +43,7 @@ export default function TimerCard({
       )
     );
     setTimer(1200);
+    route.push("/tasks/" + currentTask.id);
   };
 
   if (!currentTask) return null;

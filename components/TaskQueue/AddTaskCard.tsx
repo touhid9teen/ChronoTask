@@ -5,9 +5,11 @@ import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Plus } from "lucide-react";
 import { Task } from "../hooks/useTaskManager";
+import { useRouter } from "next/navigation";
 
 export default function AddTaskCard({ tasks, setTasks, queue, setQueue }: any) {
   const [title, setTitle] = useState("");
+  
 
   const addTask = () => {
     if (!title.trim()) return;
@@ -20,6 +22,7 @@ export default function AddTaskCard({ tasks, setTasks, queue, setQueue }: any) {
     setTasks([...tasks, newTask]);
     setQueue([...queue, newTask]);
     setTitle("");
+    
   };
 
   return (
