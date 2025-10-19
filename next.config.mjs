@@ -1,4 +1,4 @@
-import withPWA from "next-pwa";
+import withPWA from "@ducanh2912/next-pwa";
 
 const isProd = process.env.NODE_ENV === "production";
 
@@ -17,5 +17,12 @@ export default withPWA({
   dest: "public",
   register: true,
   skipWaiting: true,
-  disable: !isProd, // Disable in dev
+  disable: !isProd,
+  // Add these for better compatibility
+  cacheOnFrontEndNav: true,
+  aggressiveFrontEndNavCaching: true,
+  reloadOnOnline: true,
+  workboxOptions: {
+    disableDevLogs: true,
+  },
 })(nextConfig);
