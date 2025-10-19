@@ -14,7 +14,7 @@ A productivity app for completing goals in 20-minute intervals with learning not
 ## 🚀 Quick Start
 ```bash
 # Clone repository
-git clone https://github.com/yourusername/20-minute-goal-tracker.git
+git clone git@github.com:touhid9teen/ChronoTask.git
 
 # Install dependencies
 npm install
