@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <!-- Book shape -->
+  <path d="M50 40 L50 160 L150 160 L150 40 Z" fill="#4A90E2" stroke="#2E5C8A" stroke-width="3"/>
+  
+  <!-- Book spine shadow -->
+  <path d="M50 40 L60 35 L60 155 L50 160 Z" fill="#2E5C8A"/>
+  
+  <!-- Book pages -->
+  <line x1="60" y1="50" x2="140" y2="50" stroke="#E8F4FF" stroke-width="2" opacity="0.5"/>
+  <line x1="60" y1="65" x2="140" y2="65" stroke="#E8F4FF" stroke-width="2" opacity="0.5"/>
+  <line x1="60" y1="80" x2="140" y2="80" stroke="#E8F4FF" stroke-width="2" opacity="0.5"/>
+  
+  <!-- Checkbox -->
+  <rect x="75" y="100" width="50" height="50" rx="8" fill="white" stroke="#2E5C8A" stroke-width="3"/>
+  
+  <!-- Checkmark -->
+  <path d="M85 122 L95 132 L115 110" fill="none" stroke="#4CAF50" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
