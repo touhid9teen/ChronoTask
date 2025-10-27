@@ -1,5 +1,6 @@
 "use client";
 import { sections } from "@/lib/variable";
+import Link from "next/link";
 import React from "react";
 
 export default function TermsOfService() {
@@ -13,6 +14,12 @@ export default function TermsOfService() {
           <p className="mb-2">{section.content}</p>
         </div>
       ))}
+      <div className="mt-6 text-center">
+        <Link href="/" className="text-blue-600 hover:underline">
+          Back to Home
+        </Link>
+      </div>
     </div>
   );
 }
+  
