@@ -8,6 +8,7 @@ import TaskQueueList from "./TaskQueueList";
 import { useTaskManager } from "../hooks/useTaskManager";
 import HeaderBar from "./HeaderBar";
 import CompletedTasks from "./ CompletedTasks";
+import AppFooter from "./footer";
 
 export default function TaskQueue() {
   const { tasks, setTasks, queue, setQueue, isLoaded } = useTaskManager();
@@ -49,6 +50,7 @@ export default function TaskQueue() {
           />
         )}
       </div>
+      <AppFooter />
     </main>
   );
 }
