@@ -8,10 +8,16 @@ import ClientProviders from "@/components/clientProviders";
 const _geist = Geist({ subsets: ["latin"] });
 const _geistMono = Geist_Mono({ subsets: ["latin"] });
 
-export const metadata: Metadata = {
-  title: "Chrono Task",
-  description: "Chrono Task - Manage your tasks efficiently and effectively.",
- 
+export const metadata = {
+  title: "ChronoTask",
+  description:
+    "ChronoTask – A 20-minute goal tracker with learning notes and offline-first PWA support.",
+  icons: {
+    icon: "/favicon.svg",
+  },
+  manifest: "/manifest.json",
+  applicationName: "ChronoTask",
+  short_name: "ChronoTask",
 };
 
 export default function RootLayout({
