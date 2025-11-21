@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ArrowLeft, Loader2, Trash2 } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
 interface ToggleBlock {
   id: string;
@@ -19,18 +19,25 @@ export default function TaskEditorPage() {
   const router = useRouter();
   const { tasks, setTasks, isLoaded, syncStatus } = useTaskManager();
   const taskId = params.taskId as string;
+  const textareaRefs = useRef<Record<string, HTMLTextAreaElement | null>>({});
 
   const [taskTitle, setTaskTitle] = useState("");
-  //   const [status, setStatus] = useState<Task["status"]>("not-completed");
   const [toggles, setToggles] = useState<ToggleBlock[]>([]);
   const [isSaving, setIsSaving] = useState(false);
+
+  // Auto-resize textarea helper
+  const autoResize = (textarea: HTMLTextAreaElement | null) => {
+    if (textarea) {
+      textarea.style.height = "auto";
+      textarea.style.height = `${textarea.scrollHeight}px`;
+    }
+  };
 
   useEffect(() => {
     if (!isLoaded || !tasks.length) return;
     const task = tasks.find((t) => t.id === taskId);
     if (task) {
       setTaskTitle(task.title);
-      //   setStatus(task.status);
       if (task.learningNotes) {
         try {
           const blocks: ToggleBlock[] = JSON.parse(task.learningNotes).map(
@@ -49,13 +56,24 @@ export default function TaskEditorPage() {
     } else router.push("/");
   }, [tasks, taskId, isLoaded, router]);
 
+  // Auto-resize textareas when toggles open or content changes
+  useEffect(() => {
+    toggles.forEach((t) => {
+      if (t.open) {
+        setTimeout(() => autoResize(textareaRefs.current[t.id]), 0);
+      }
+    });
+  }, [toggles]);
+
   const addToggle = () =>
     setToggles((prev) => [
       ...prev,
       { id: `toggle-${Date.now()}`, title: "", content: "", open: true },
     ]);
+
   const removeToggle = (id: string) =>
     setToggles((prev) => prev.filter((t) => t.id !== id));
+
   const updateToggle = (
     id: string,
     field: "title" | "content",
@@ -65,6 +83,7 @@ export default function TaskEditorPage() {
       prev.map((t) => (t.id === id ? { ...t, [field]: value } : t))
     );
   };
+
   const toggleOpen = (id: string) =>
     setToggles((prev) =>
       prev.map((t) => (t.id === id ? { ...t, open: !t.open } : t))
@@ -75,8 +94,7 @@ export default function TaskEditorPage() {
     id: string
   ) => {
     updateToggle(id, "content", e.target.value);
-    e.target.style.height = "auto";
-    e.target.style.height = `${e.target.scrollHeight}px`;
+    autoResize(e.target);
   };
 
   const saveTask = async () => {
@@ -141,25 +159,6 @@ export default function TaskEditorPage() {
             className="w-full text-2xl font-bold p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
           />
         </div>
-        {/* <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
-          <label className="text-sm font-medium text-gray-700">Status:</label>
-          <div className="flex gap-2">
-            <Button
-              variant={status === "not-completed" ? "default" : "outline"}
-              size="sm"
-              onClick={() => setStatus("not-completed")}
-            >
-              Not Completed
-            </Button>
-            <Button
-              variant={status === "completed" ? "default" : "outline"}
-              size="sm"
-              onClick={() => setStatus("completed")}
-            >
-              Completed
-            </Button>
-          </div>
-        </div> */}
 
         {/* Toggles Section */}
         <div className="space-y-2">
@@ -169,14 +168,14 @@ export default function TaskEditorPage() {
             </Button>
           </div>
           {toggles.map((t, idx) => (
-            <Card key={t.id} className="border border-gray-300 p-2">
-              <div className="flex items-center justify-between">
+            <Card key={t.id} className="border border-gray-300 p-3">
+              <div className="flex items-center justify-between gap-2">
                 <div
-                  className="flex items-center cursor-pointer select-none flex-1"
+                  className="flex items-center cursor-pointer select-none flex-1 min-w-0"
                   onClick={() => toggleOpen(t.id)}
                 >
                   <span
-                    className={`mr-2 transition-transform ${
+                    className={`mr-2 transition-transform text-gray-500 ${
                       t.open ? "rotate-90" : ""
                     }`}
                   >
@@ -186,10 +185,11 @@ export default function TaskEditorPage() {
                     type="text"
                     placeholder={`Toggle ${idx + 1} title`}
                     value={t.title}
+                    onClick={(e) => e.stopPropagation()}
                     onChange={(e) =>
                       updateToggle(t.id, "title", e.target.value)
                     }
-                    className="flex-1 border-b border-gray-300 focus:border-blue-500 p-1 outline-none"
+                    className="flex-1 min-w-0 border-b border-gray-200 font-semibold focus:border-blue-500 p-1 outline-none bg-transparent"
                   />
                 </div>
                 <button
@@ -202,11 +202,13 @@ export default function TaskEditorPage() {
               </div>
               {t.open && (
                 <textarea
-                  id={`textarea-${t.id}`}
+                  ref={(el) => {
+                    textareaRefs.current[t.id] = el;
+                  }}
                   placeholder="Write notes here..."
                   value={t.content}
                   onChange={(e) => handleTextareaInput(e, t.id)}
-                  className="w-full mt-2 p-1 bg-transparent resize-none outline-none"
+                  className="w-full mt-3 p-2 bg-gray-50 rounded-md resize-none outline-none  min-h-[80px]"
                   style={{ overflow: "hidden" }}
                 />
               )}
