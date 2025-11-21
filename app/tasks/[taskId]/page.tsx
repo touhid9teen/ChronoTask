@@ -3,7 +3,7 @@
 import { useTaskManager } from "@/components/hooks/useTaskManager";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ArrowLeft, Loader2 } from "lucide-react";
+import { ArrowLeft, Loader2, Trash2 } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -192,14 +192,13 @@ export default function TaskEditorPage() {
                     className="flex-1 border-b border-gray-300 focus:border-blue-500 p-1 outline-none"
                   />
                 </div>
-                <Button
-                  variant="outline"
-                  size="sm"
+                <button
                   onClick={() => removeToggle(t.id)}
-                  className="text-red-600 hover:text-red-700 border border-gray-300 hover:bg-red-50"
+                  className="p-2 rounded-md text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors"
+                  title="Delete note"
                 >
-                  Remove
-                </Button>
+                  <Trash2 className="w-4 h-4" />
+                </button>
               </div>
               {t.open && (
                 <textarea
