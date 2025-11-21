@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Clock, CheckCircle2 } from "lucide-react";
-import { Task } from "../hooks/useTaskManager";
+import { Task } from "../../hooks/useTaskManager";
 import { useRouter } from "next/navigation";
 
 export default function TimerCard({

@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { GripVertical, Trash2 } from "lucide-react";
 import { useState } from "react";
-import { Task } from "../hooks/useTaskManager";
+import { Task } from "../../hooks/useTaskManager";
 
 export default function TaskQueueList({ queue, setQueue, setTasks }: any) {
   const [draggedId, setDraggedId] = useState<string | null>(null);

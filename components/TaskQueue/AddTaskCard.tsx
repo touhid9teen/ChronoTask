@@ -4,7 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Plus } from "lucide-react";
 import { useState } from "react";
-import { Task } from "../hooks/useTaskManager";
+import { Task } from "../../hooks/useTaskManager";
 
 export default function AddTaskCard({ tasks, setTasks, queue, setQueue }: any) {
   const [title, setTitle] = useState("");

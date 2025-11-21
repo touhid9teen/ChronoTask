@@ -1,6 +1,6 @@
 {
-  "name": "My Next App",
-  "short_name": "NextApp",
+  "name": "ChronoTask",
+  "short_name": "ChronoTask",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",

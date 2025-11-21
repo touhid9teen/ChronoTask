@@ -1,6 +1,6 @@
 "use client";
 
-import { useTaskManager } from "@/components/hooks/useTaskManager";
+import { useTaskManager } from "@/hooks/useTaskManager";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ArrowLeft, Loader2, Trash2 } from "lucide-react";

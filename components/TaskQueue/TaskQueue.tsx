@@ -5,7 +5,7 @@ import { useState } from "react";
 import TimerCard from "./TimerCard";
 import AddTaskCard from "./AddTaskCard";
 import TaskQueueList from "./TaskQueueList";
-import { useTaskManager } from "../hooks/useTaskManager";
+import { useTaskManager } from "../../hooks/useTaskManager";
 import HeaderBar from "./HeaderBar";
 import CompletedTasks from "./ CompletedTasks";
 import AppFooter from "./footer";

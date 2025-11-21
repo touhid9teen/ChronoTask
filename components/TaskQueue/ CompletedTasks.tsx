@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
-import { Task } from "../hooks/useTaskManager";
+import { Task } from "../../hooks/useTaskManager";
 import { useRouter } from "next/navigation";
 
 interface CompletedTasksProps {

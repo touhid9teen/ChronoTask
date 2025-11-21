@@ -18,11 +18,22 @@ export default withPWA({
   register: true,
   skipWaiting: true,
   disable: !isProd,
-  // Add these for better compatibility
   cacheOnFrontEndNav: true,
   aggressiveFrontEndNavCaching: true,
   reloadOnOnline: true,
   workboxOptions: {
     disableDevLogs: true,
+    runtimeCaching: [
+      {
+        urlPattern: /^\/api\/auth\//,
+        handler: "NetworkOnly",
+        method: "GET",
+      },
+      {
+        urlPattern: /^\/api\/auth\//,
+        handler: "NetworkOnly",
+        method: "POST",
+      },
+    ],
   },
 })(nextConfig);
