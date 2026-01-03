@@ -11,7 +11,7 @@ export default function TermsOfService() {
       {/* Header */}
       <header className="bg-white border-b sticky top-0 z-50">
         <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
-          <Link href="/about" className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition">
+          <Link href="/about" className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors duration-150 cursor-pointer">
             <ArrowLeft className="w-4 h-4" />
             <span>Back to Home</span>
           </Link>
@@ -44,13 +44,13 @@ export default function TermsOfService() {
           </div>
 
           <div className="mt-12 pt-8 border-t border-gray-200 flex gap-4 justify-center">
-            <Link href="/about">
-              <Button variant="outline">
+            <Link href="/about" className="cursor-pointer">
+              <Button variant="outline" className="cursor-pointer transition-all duration-150 hover:scale-105">
                 Back to Home
               </Button>
             </Link>
-            <Link href="/privacy-policy">
-              <Button variant="outline">
+            <Link href="/privacy-policy" className="cursor-pointer">
+              <Button variant="outline" className="cursor-pointer transition-all duration-150 hover:scale-105">
                 Privacy Policy
               </Button>
             </Link>

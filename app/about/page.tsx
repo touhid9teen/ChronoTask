@@ -10,7 +10,7 @@ export default function AboutPage() {
       {/* Simple Header */}
       <header className="border-b bg-white sticky top-0 z-50">
         <div className="max-w-5xl mx-auto px-4 py-4 flex justify-between items-center">
-          <Link href="/" className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition">
+          <Link href="/" className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors duration-150 cursor-pointer">
             <ArrowLeft className="w-4 h-4" />
             <span className="text-sm font-medium">Back to App</span>
           </Link>
@@ -19,10 +19,10 @@ export default function AboutPage() {
             <h1 className="text-lg font-bold text-gray-900">ChronoTask</h1>
           </div>
           <nav className="flex gap-3 text-sm">
-            <Link href="/privacy-policy" className="text-gray-600 hover:text-gray-900 transition">
+            <Link href="/privacy-policy" className="text-gray-600 hover:text-gray-900 transition-colors duration-150 cursor-pointer">
               Privacy
             </Link>
-            <Link href="/terms-and-service" className="text-gray-600 hover:text-gray-900 transition">
+            <Link href="/terms-and-service" className="text-gray-600 hover:text-gray-900 transition-colors duration-150 cursor-pointer">
               Terms
             </Link>
           </nav>
@@ -45,8 +45,8 @@ export default function AboutPage() {
           Track tasks, capture notes, and optionally sync across devices with Google Drive.
         </p>
 
-        <Link href="/">
-          <Button size="lg" className="gap-2">
+        <Link href="/" className="inline-block cursor-pointer">
+          <Button size="lg" className="gap-2 cursor-pointer transition-all duration-150 hover:scale-105">
             Launch App <ArrowRight className="w-4 h-4" />
           </Button>
         </Link>
@@ -58,7 +58,7 @@ export default function AboutPage() {
           <h3 className="text-2xl font-bold text-center mb-10">Key Features</h3>
           
           <div className="grid md:grid-cols-2 gap-6">
-            <div className="bg-white p-6 rounded-lg border">
+            <div className="bg-white p-6 rounded-lg border hover:shadow-md transition-all duration-200 cursor-default">
               <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mb-3">
                 <Clock className="w-5 h-5 text-blue-600" />
               </div>
@@ -68,7 +68,7 @@ export default function AboutPage() {
               </p>
             </div>
 
-            <div className="bg-white p-6 rounded-lg border">
+            <div className="bg-white p-6 rounded-lg border hover:shadow-md transition-all duration-200 cursor-default">
               <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center mb-3">
                 <Zap className="w-5 h-5 text-green-600" />
               </div>
@@ -78,7 +78,7 @@ export default function AboutPage() {
               </p>
             </div>
 
-            <div className="bg-white p-6 rounded-lg border">
+            <div className="bg-white p-6 rounded-lg border hover:shadow-md transition-all duration-200 cursor-default">
               <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center mb-3">
                 <Cloud className="w-5 h-5 text-purple-600" />
               </div>
@@ -88,7 +88,7 @@ export default function AboutPage() {
               </p>
             </div>
 
-            <div className="bg-white p-6 rounded-lg border">
+            <div className="bg-white p-6 rounded-lg border hover:shadow-md transition-all duration-200 cursor-default">
               <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center mb-3">
                 <Lock className="w-5 h-5 text-red-600" />
               </div>
@@ -127,7 +127,7 @@ export default function AboutPage() {
             </ul>
 
             <div className="text-center mt-6 pt-4 border-t border-blue-200">
-              <Link href="/privacy-policy" className="text-blue-600 hover:underline font-medium text-sm">
+              <Link href="/privacy-policy" className="text-blue-600 hover:text-blue-700 hover:underline font-medium text-sm transition-colors duration-150 cursor-pointer">
                 Read Full Privacy Policy →
               </Link>
             </div>
@@ -143,15 +143,15 @@ export default function AboutPage() {
             <span className="text-sm font-semibold text-gray-700">ChronoTask</span>
           </div>
           <div className="flex justify-center gap-4 text-sm text-gray-600 mb-4">
-            <Link href="/privacy-policy" className="hover:text-gray-900">
+            <Link href="/privacy-policy" className="hover:text-gray-900 transition-colors duration-150 cursor-pointer">
               Privacy Policy
             </Link>
             <span>•</span>
-            <Link href="/terms-and-service" className="hover:text-gray-900">
+            <Link href="/terms-and-service" className="hover:text-gray-900 transition-colors duration-150 cursor-pointer">
               Terms of Service
             </Link>
             <span>•</span>
-            <a href="mailto:touhid.ru66@gmail.com" className="hover:text-gray-900">
+            <a href="mailto:touhid.ru66@gmail.com" className="hover:text-gray-900 transition-colors duration-150 cursor-pointer">
               Contact
             </a>
           </div>

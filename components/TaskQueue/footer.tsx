@@ -10,12 +10,12 @@ export default function AppFooter() {
         <br />
         <Link
           href="/terms-and-service"
-          className="underline hover:text-blue-600"
+          className="underline hover:text-blue-600 transition-colors duration-150 cursor-pointer"
         >
           Terms of Service
         </Link>{" "}
         •{" "}
-        <Link href="/privacy-policy" className="underline hover:text-blue-600">
+        <Link href="/privacy-policy" className="underline hover:text-blue-600 transition-colors duration-150 cursor-pointer">
           Privacy Policy
         </Link>
       </p>
