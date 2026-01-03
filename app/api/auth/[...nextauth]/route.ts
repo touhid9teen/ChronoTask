@@ -8,11 +8,16 @@ const handler = NextAuth({
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
       authorization: {
         params: {
-          scope: "https://www.googleapis.com/auth/drive.file",
+          // Include standard OAuth scopes plus Drive access
+          scope: "openid email profile https://www.googleapis.com/auth/drive.file",
+          prompt: "consent",
+          access_type: "offline",
+          response_type: "code"
         },
       },
     }),
   ],
+  secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
     async jwt({ token, account }) {
       if (account) {
