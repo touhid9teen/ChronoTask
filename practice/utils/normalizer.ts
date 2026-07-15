@@ -1,4 +1,5 @@
-import type { ParsedQuestion, Question, QuestionType, QuestionDifficulty } from "../types";
+import type { ParsedQuestion, Question, QuestionType } from "../types";
+import { QuestionDifficulty } from "../types";
 import { generateId } from "./id";
 
 export function normalizeQuestions(
