@@ -8,6 +8,7 @@ import {
   Cloud,
   CloudOff,
   Info,
+  BookOpen,
 } from "lucide-react";
 import { useSession, signIn, signOut } from "next-auth/react";
 import Link from "next/link";
@@ -80,6 +81,17 @@ export default function HeaderBar({
               <CheckSquare className="w-4 h-4" />
               <span className="hidden sm:inline">Completed</span>
             </Button>
+
+            <Link href="/practice">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="gap-1.5"
+              >
+                <BookOpen className="w-4 h-4" />
+                <span className="hidden sm:inline">Practice</span>
+              </Button>
+            </Link>
 
             <Link href="/about">
               <Button
