@@ -87,7 +87,6 @@ export default function CreateExamForm({
       order: questions.length + i + 1,
     }));
     setQuestions((prev) => [...prev, ...newQs]);
-    setShowImporter(false);
   };
 
   const updateQuestion = (i: number, updated: Question) => {
@@ -170,30 +169,58 @@ export default function CreateExamForm({
                       className="text-sm"
                     />
                     <div className="grid grid-cols-2 gap-2">
-                      <Select
-                        value={q.type}
-                        onValueChange={(v) =>
-                          updateQuestion(i, { ...q, type: v as QuestionType })
-                        }
-                      >
-                        <SelectTrigger className="h-8 text-xs">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value={QuestionType.MCQ}>MCQ</SelectItem>
-                          <SelectItem value={QuestionType.MULTIPLE_CORRECT}>Multi Correct</SelectItem>
-                          <SelectItem value={QuestionType.TRUE_FALSE}>True/False</SelectItem>
-                          <SelectItem value={QuestionType.FILL_BLANK}>Fill Blank</SelectItem>
-                          <SelectItem value={QuestionType.SHORT_ANSWER}>Short Answer</SelectItem>
-                          <SelectItem value={QuestionType.LONG_ANSWER}>Long Answer</SelectItem>
-                        </SelectContent>
-                      </Select>
+                      {(q.type === QuestionType.MCQ ||
+                        q.type === QuestionType.MULTIPLE_CORRECT) &&
+                      q.options && q.options.length > 0 ? (
+                        <Select
+                          value={String(q.correctAnswer || "")}
+                          onValueChange={(v) =>
+                            updateQuestion(i, { ...q, correctAnswer: v })
+                          }
+                        >
+                          <SelectTrigger className="h-8 text-xs">
+                            <SelectValue placeholder="Select answer" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {q.options.map((opt, oi) => (
+                              <SelectItem key={oi} value={opt}>
+                                {String.fromCharCode(65 + oi)}. {opt}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      ) : q.type === QuestionType.TRUE_FALSE ? (
+                        <Select
+                          value={String(q.correctAnswer || "")}
+                          onValueChange={(v) =>
+                            updateQuestion(i, { ...q, correctAnswer: v })
+                          }
+                        >
+                          <SelectTrigger className="h-8 text-xs">
+                            <SelectValue placeholder="Select answer" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="True">True</SelectItem>
+                            <SelectItem value="False">False</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      ) : (
+                        <Input
+                          value={String(q.correctAnswer || "")}
+                          onChange={(e) =>
+                            updateQuestion(i, { ...q, correctAnswer: e.target.value })
+                          }
+                          placeholder="Answer"
+                          className="text-xs h-8"
+                        />
+                      )}
                       <Input
-                        value={String(q.correctAnswer || "")}
+                        value={q.marks || 1}
                         onChange={(e) =>
-                          updateQuestion(i, { ...q, correctAnswer: e.target.value })
+                          updateQuestion(i, { ...q, marks: parseInt(e.target.value) || 1 })
                         }
-                        placeholder="Answer"
+                        type="number"
+                        placeholder="Marks"
                         className="text-xs h-8"
                       />
                     </div>
