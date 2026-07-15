@@ -13,7 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ArrowLeft, Plus, X, Loader2, Check, Upload, FileText, Trash2 } from "lucide-react";
+import { ArrowLeft, Loader2, Check, Trash2 } from "lucide-react";
 import { QuestionDifficulty, QuestionType } from "@/practice/types";
 import type { PracticeExam, Question } from "@/practice/types";
 import { generateId } from "@/practice/utils/id";
@@ -150,10 +150,9 @@ export default function CreateExamForm({
 
         <QuestionImporter
           onQuestionsImported={handleQuestionsImported}
-          onClose={() => {}}
         />
 
-        {questions.length > 0 ? (
+        {questions.length > 0 && (
           <div className="space-y-2">
             {questions.map((q, i) => (
               <Card key={q.id} className="p-3">
@@ -229,13 +228,6 @@ export default function CreateExamForm({
               </Card>
             ))}
           </div>
-        ) : (
-          <Card className="p-8 text-center border-dashed">
-            <FileText className="w-8 h-8 text-gray-300 mx-auto mb-2" />
-            <p className="text-sm text-gray-500">
-              Import a file or add questions
-            </p>
-          </Card>
         )}
       </div>
 
