@@ -2,12 +2,10 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { Card } from "@/components/ui/card";
 import {
   Select,
   SelectContent,
@@ -15,238 +13,235 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Plus, X, Loader2, Check } from "lucide-react";
-import {
-  examFormSchema,
-  type ExamFormValues,
-} from "@/practice/validators/exam";
-import { QuestionDifficulty } from "@/practice/types";
-import type { PracticeExam } from "@/practice/types";
+import { ArrowLeft, Plus, X, Loader2, Check, Upload, FileText, Trash2 } from "lucide-react";
+import { QuestionDifficulty, QuestionType } from "@/practice/types";
+import type { PracticeExam, Question } from "@/practice/types";
 import { generateId } from "@/practice/utils/id";
+import QuestionImporter from "./QuestionImporter";
 
 interface CreateExamFormProps {
   onSubmit: (exam: PracticeExam) => void;
+  onStart?: (exam: PracticeExam) => void;
   initialData?: PracticeExam;
   isEditing?: boolean;
 }
 
 export default function CreateExamForm({
   onSubmit,
+  onStart,
   initialData,
   isEditing = false,
 }: CreateExamFormProps) {
   const router = useRouter();
-  const [tagInput, setTagInput] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [questions, setQuestions] = useState<Question[]>(
+    initialData?.questions || []
+  );
 
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    watch,
-    formState: { errors },
-  } = useForm<ExamFormValues>({
-    resolver: zodResolver(examFormSchema),
-    defaultValues: {
-      title: initialData?.title || "",
-      description: initialData?.description || "",
-      subject: initialData?.subject || "",
-      category: initialData?.category || "",
-      difficulty: initialData?.difficulty || QuestionDifficulty.MEDIUM,
-      totalMarks: initialData?.totalMarks || 100,
-      duration: initialData?.duration || 60,
-      passingMarks: initialData?.passingMarks,
-      negativeMarks: initialData?.negativeMarks,
-      instructions: initialData?.instructions || "",
-      tags: initialData?.tags || [],
-    },
-  });
+  const [title, setTitle] = useState(initialData?.title || "");
+  const [duration, setDuration] = useState(initialData?.duration || 60);
+  const [marksPerQuestion, setMarksPerQuestion] = useState(initialData?.questions?.[0]?.marks || 1);
+  const [negativeMarks, setNegativeMarks] = useState(initialData?.negativeMarks || 0);
 
-  const tags = watch("tags");
-  const difficulty = watch("difficulty");
-
-  const addTag = () => {
-    const trimmed = tagInput.trim();
-    if (trimmed && !tags.includes(trimmed)) {
-      setValue("tags", [...tags, trimmed], { shouldValidate: true });
-      setTagInput("");
-    }
+  const buildExam = (): PracticeExam => {
+    const now = new Date().toISOString();
+    const totalMarks = questions.reduce((sum, q) => sum + q.marks, 0);
+    return {
+      id: initialData?.id || generateId(),
+      title,
+      description: "",
+      subject: "",
+      category: "",
+      difficulty: QuestionDifficulty.MEDIUM,
+      totalMarks: totalMarks || questions.length * marksPerQuestion,
+      duration,
+      negativeMarks: negativeMarks || undefined,
+      instructions: "",
+      tags: [],
+      questions: questions.map((q) => ({ ...q, marks: q.marks || marksPerQuestion })),
+      createdAt: initialData?.createdAt || now,
+      updatedAt: now,
+      status: initialData?.status || "draft",
+    };
   };
 
-  const removeTag = (tag: string) => {
-    setValue("tags", tags.filter((t) => t !== tag), { shouldValidate: true });
-  };
-
-  const onFormSubmit = (data: ExamFormValues) => {
+  const handleSave = () => {
+    if (!title.trim()) return;
     setIsSubmitting(true);
     try {
-      const now = new Date().toISOString();
-      const exam: PracticeExam = {
-        id: initialData?.id || generateId(),
-        ...data,
-        questions: initialData?.questions || [],
-        createdAt: initialData?.createdAt || now,
-        updatedAt: now,
-        status: initialData?.status || "draft",
-      } as PracticeExam;
-      onSubmit(exam);
+      onSubmit(buildExam());
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  return (
-    <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-4">
-      {/* Title + Description */}
-      <div className="space-y-3">
-        <div className="space-y-1.5">
-          <Label htmlFor="title">Exam Title *</Label>
-          <Input
-            id="title"
-            {...register("title")}
-            placeholder="e.g. Midterm Physics Exam"
-          />
-          {errors.title && (
-            <p className="text-xs text-red-500">{errors.title.message}</p>
-          )}
-        </div>
-        <div className="space-y-1.5">
-          <Label htmlFor="description">Description</Label>
-          <Textarea
-            id="description"
-            {...register("description")}
-            placeholder="Brief description..."
-            rows={2}
-          />
-        </div>
-      </div>
+  const handleStart = () => {
+    if (!title.trim() || questions.length === 0) return;
+    onStart?.(buildExam());
+  };
 
-      {/* Subject + Category + Difficulty */}
+  const handleQuestionsImported = (imported: Question[]) => {
+    const newQs = imported.map((q, i) => ({
+      ...q,
+      id: q.id || `${Date.now()}-${i}`,
+      order: questions.length + i + 1,
+    }));
+    setQuestions((prev) => [...prev, ...newQs]);
+    setShowImporter(false);
+  };
+
+  const updateQuestion = (i: number, updated: Question) => {
+    setQuestions((prev) => prev.map((q, idx) => (idx === i ? updated : q)));
+  };
+
+  const removeQuestion = (i: number) => {
+    setQuestions((prev) =>
+      prev.filter((_, idx) => idx !== i).map((q, idx) => ({ ...q, order: idx + 1 }))
+    );
+  };
+
+  return (
+    <div className="space-y-5">
+      {/* Exam details */}
+      <div className="space-y-1.5">
+        <Label>Exam Title *</Label>
+        <Input
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          placeholder="e.g. Physics Midterm"
+        />
+      </div>
       <div className="grid grid-cols-3 gap-3">
         <div className="space-y-1.5">
-          <Label>Subject *</Label>
-          <Input {...register("subject")} placeholder="Physics" />
-          {errors.subject && (
-            <p className="text-xs text-red-500">{errors.subject.message}</p>
-          )}
-        </div>
-        <div className="space-y-1.5">
-          <Label>Category *</Label>
-          <Input {...register("category")} placeholder="Mechanics" />
-          {errors.category && (
-            <p className="text-xs text-red-500">{errors.category.message}</p>
-          )}
-        </div>
-        <div className="space-y-1.5">
-          <Label>Difficulty</Label>
-          <Select
-            value={difficulty}
-            onValueChange={(v) => setValue("difficulty", v as QuestionDifficulty)}
-          >
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value={QuestionDifficulty.EASY}>Easy</SelectItem>
-              <SelectItem value={QuestionDifficulty.MEDIUM}>Medium</SelectItem>
-              <SelectItem value={QuestionDifficulty.HARD}>Hard</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
-
-      {/* Marks + Duration + Passing + Negative */}
-      <div className="grid grid-cols-4 gap-3">
-        <div className="space-y-1.5">
-          <Label>Marks *</Label>
+          <Label>Duration (min) *</Label>
           <Input
             type="number"
-            {...register("totalMarks", { valueAsNumber: true })}
+            value={duration}
+            onChange={(e) => setDuration(parseInt(e.target.value) || 60)}
           />
         </div>
         <div className="space-y-1.5">
-          <Label>Minutes *</Label>
+          <Label>Marks / Q</Label>
           <Input
             type="number"
-            {...register("duration", { valueAsNumber: true })}
+            value={marksPerQuestion}
+            onChange={(e) => setMarksPerQuestion(parseInt(e.target.value) || 1)}
           />
         </div>
         <div className="space-y-1.5">
-          <Label>Pass Mark</Label>
-          <Input
-            type="number"
-            {...register("passingMarks", { valueAsNumber: true })}
-          />
-        </div>
-        <div className="space-y-1.5">
-          <Label>Negative</Label>
+          <Label>Negative Mark</Label>
           <Input
             type="number"
             step="0.25"
-            {...register("negativeMarks", { valueAsNumber: true })}
-            placeholder="0.25"
+            value={negativeMarks || ""}
+            onChange={(e) => setNegativeMarks(parseFloat(e.target.value) || 0)}
+            placeholder="0"
           />
         </div>
       </div>
 
-      {/* Instructions */}
-      <div className="space-y-1.5">
-        <Label>Instructions</Label>
-        <Textarea
-          {...register("instructions")}
-          placeholder="Exam instructions for students..."
-          rows={2}
+      {/* Questions */}
+      <div className="border-t border-gray-200 pt-4 space-y-3">
+        <div className="flex items-center justify-between">
+          <h3 className="font-semibold text-gray-900">
+            Questions ({questions.length})
+          </h3>
+        </div>
+
+        <QuestionImporter
+          onQuestionsImported={handleQuestionsImported}
+          onClose={() => {}}
         />
-      </div>
 
-      {/* Tags */}
-      <div className="space-y-1.5">
-        <Label>Tags</Label>
-        <div className="flex gap-2">
-          <Input
-            value={tagInput}
-            onChange={(e) => setTagInput(e.target.value)}
-            placeholder="Add tag..."
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                e.preventDefault();
-                addTag();
-              }
-            }}
-          />
-          <Button
-            type="button"
-            variant="outline"
-            size="icon"
-            onClick={addTag}
-            className="shrink-0"
-          >
-            <Plus className="w-4 h-4" />
-          </Button>
-        </div>
-        {tags.length > 0 && (
-          <div className="flex flex-wrap gap-1 mt-1">
-            {tags.map((tag) => (
-              <Badge key={tag} variant="secondary" className="gap-1 pr-1 text-xs">
-                {tag}
-                <button
-                  type="button"
-                  onClick={() => removeTag(tag)}
-                  className="ml-0.5 hover:text-red-500"
-                >
-                  <X className="w-3 h-3" />
-                </button>
-              </Badge>
+        {questions.length > 0 ? (
+          <div className="space-y-2">
+            {questions.map((q, i) => (
+              <Card key={q.id} className="p-3">
+                <div className="flex items-start gap-3">
+                  <span className="text-xs font-bold text-gray-400 bg-gray-100 px-2 py-1 rounded shrink-0">
+                    Q{i + 1}
+                  </span>
+                  <div className="flex-1 min-w-0 space-y-2">
+                    <Input
+                      value={q.text}
+                      onChange={(e) =>
+                        updateQuestion(i, { ...q, text: e.target.value })
+                      }
+                      placeholder="Question text..."
+                      className="text-sm"
+                    />
+                    <div className="grid grid-cols-2 gap-2">
+                      <Select
+                        value={q.type}
+                        onValueChange={(v) =>
+                          updateQuestion(i, { ...q, type: v as QuestionType })
+                        }
+                      >
+                        <SelectTrigger className="h-8 text-xs">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value={QuestionType.MCQ}>MCQ</SelectItem>
+                          <SelectItem value={QuestionType.MULTIPLE_CORRECT}>Multi Correct</SelectItem>
+                          <SelectItem value={QuestionType.TRUE_FALSE}>True/False</SelectItem>
+                          <SelectItem value={QuestionType.FILL_BLANK}>Fill Blank</SelectItem>
+                          <SelectItem value={QuestionType.SHORT_ANSWER}>Short Answer</SelectItem>
+                          <SelectItem value={QuestionType.LONG_ANSWER}>Long Answer</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <Input
+                        value={String(q.correctAnswer || "")}
+                        onChange={(e) =>
+                          updateQuestion(i, { ...q, correctAnswer: e.target.value })
+                        }
+                        placeholder="Answer"
+                        className="text-xs h-8"
+                      />
+                    </div>
+                    {(q.type === QuestionType.MCQ ||
+                      q.type === QuestionType.MULTIPLE_CORRECT) && (
+                      <div className="grid grid-cols-2 gap-1.5">
+                        {(q.options || []).map((opt, oi) => (
+                          <Input
+                            key={oi}
+                            value={opt}
+                            onChange={(e) => {
+                              const opts = [...(q.options || [])];
+                              opts[oi] = e.target.value;
+                              updateQuestion(i, { ...q, options: opts });
+                            }}
+                            placeholder={`${String.fromCharCode(65 + oi)}.`}
+                            className="text-xs h-7"
+                          />
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-7 w-7 shrink-0 text-gray-300 hover:text-red-500"
+                    onClick={() => removeQuestion(i)}
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </Button>
+                </div>
+              </Card>
             ))}
           </div>
+        ) : (
+          <Card className="p-8 text-center border-dashed">
+            <FileText className="w-8 h-8 text-gray-300 mx-auto mb-2" />
+            <p className="text-sm text-gray-500">
+              Import a file or add questions
+            </p>
+          </Card>
         )}
       </div>
 
       {/* Actions */}
-      <div className="flex items-center justify-between pt-2">
+      <div className="flex items-center justify-between pt-2 border-t border-gray-200">
         <Button
-          type="button"
           variant="ghost"
           size="sm"
           onClick={() => router.push("/practice")}
@@ -255,19 +250,28 @@ export default function CreateExamForm({
           <ArrowLeft className="w-4 h-4" />
           Cancel
         </Button>
-        <Button
-          type="submit"
-          disabled={isSubmitting}
-          className="bg-blue-600 hover:bg-blue-700 text-white gap-2"
-        >
-          {isSubmitting ? (
-            <Loader2 className="w-4 h-4 animate-spin" />
-          ) : (
-            <Check className="w-4 h-4" />
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            onClick={handleSave}
+            disabled={isSubmitting || !title.trim()}
+            className="gap-2"
+          >
+            {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
+            Save
+          </Button>
+          {questions.length > 0 && onStart && (
+            <Button
+              onClick={handleStart}
+              disabled={isSubmitting || !title.trim()}
+              className="bg-green-600 hover:bg-green-700 text-white gap-2"
+            >
+              <Check className="w-4 h-4" />
+              Start Test
+            </Button>
           )}
-          {isEditing ? "Update" : "Create Exam"}
-        </Button>
+        </div>
       </div>
-    </form>
+    </div>
   );
 }
