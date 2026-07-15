@@ -8,7 +8,7 @@ import QuestionImporter from "@/practice/components/QuestionImporter";
 import QuestionList from "@/practice/components/QuestionList";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ArrowLeft, Upload, Plus, Save, Loader2 } from "lucide-react";
+import { ArrowLeft, Upload, Plus, Save, Loader2, Play, Clock, FileText } from "lucide-react";
 import type { PracticeExam, Question } from "@/practice/types";
 
 export default function EditExamPage() {
@@ -86,6 +86,8 @@ export default function EditExamPage() {
     );
   }
 
+  const hasQuestions = exam.questions.length > 0;
+
   return (
     <div className="min-h-screen bg-gray-50">
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
@@ -99,18 +101,31 @@ export default function EditExamPage() {
             <ArrowLeft className="w-4 h-4" />
             Back
           </Button>
-          <Button
-            onClick={handleSave}
-            disabled={isSaving}
-            className="bg-gray-900 hover:bg-gray-800 text-white gap-2"
-          >
-            {isSaving ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
-            ) : (
-              <Save className="w-4 h-4" />
+          <div className="flex items-center gap-2">
+            <Button
+              onClick={handleSave}
+              disabled={isSaving}
+              variant="outline"
+              size="sm"
+              className="gap-1.5"
+            >
+              {isSaving ? (
+                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+              ) : (
+                <Save className="w-3.5 h-3.5" />
+              )}
+              Save
+            </Button>
+            {hasQuestions && (
+              <Button
+                onClick={() => router.push(`/practice/${examId}/take`)}
+                className="bg-green-600 hover:bg-green-700 text-white gap-1.5"
+              >
+                <Play className="w-4 h-4" />
+                Start Test
+              </Button>
             )}
-            {isSaving ? "Saving..." : "Save & Exit"}
-          </Button>
+          </div>
         </div>
       </header>
 
@@ -121,11 +136,17 @@ export default function EditExamPage() {
           isEditing
         />
 
-        <div className="space-y-4">
+        {/* Questions Section */}
+        <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-gray-900">
-              Questions ({exam.questions.length})
-            </h2>
+            <div className="flex items-center gap-2">
+              <h2 className="text-lg font-semibold text-gray-900">
+                Questions
+              </h2>
+              <span className="text-sm text-gray-400">
+                ({exam.questions.length})
+              </span>
+            </div>
             <div className="flex gap-2">
               <Button
                 variant="outline"
@@ -133,8 +154,8 @@ export default function EditExamPage() {
                 onClick={() => setShowImporter(!showImporter)}
                 className="gap-1.5"
               >
-                <Upload className="w-4 h-4" />
-                Import
+                <Upload className="w-3.5 h-3.5" />
+                Import File
               </Button>
               <Button
                 size="sm"
@@ -152,10 +173,11 @@ export default function EditExamPage() {
                   };
                   handleQuestionsImported([newQ]);
                 }}
-                className="bg-blue-600 hover:bg-blue-700 text-white gap-1.5"
+                variant="outline"
+                className="gap-1.5"
               >
-                <Plus className="w-4 h-4" />
-                Add Question
+                <Plus className="w-3.5 h-3.5" />
+                Add One
               </Button>
             </div>
           </div>
@@ -167,20 +189,54 @@ export default function EditExamPage() {
             />
           )}
 
-          {exam.questions.length > 0 ? (
+          {hasQuestions ? (
             <QuestionList
               questions={exam.questions}
               onUpdate={handleQuestionUpdate}
             />
           ) : (
-            <Card className="p-8 text-center">
-              <p className="text-gray-500 mb-4">No questions yet</p>
+            <Card className="p-10 text-center border-dashed">
+              <FileText className="w-10 h-10 text-gray-300 mx-auto mb-3" />
+              <p className="text-gray-500 mb-1">No questions yet</p>
               <p className="text-sm text-gray-400">
-                Import questions from a file or add them manually
+                Import a file or add questions manually
               </p>
             </Card>
           )}
         </div>
+
+        {/* Start Test CTA */}
+        {hasQuestions && (
+          <Card className="p-5 bg-gradient-to-r from-green-50 to-emerald-50 border-green-200">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                  <Play className="w-6 h-6 text-green-600" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-gray-900">Ready to go!</h3>
+                  <p className="text-sm text-gray-500 flex items-center gap-3 mt-0.5">
+                    <span className="flex items-center gap-1">
+                      <FileText className="w-3.5 h-3.5" />
+                      {exam.questions.length} questions
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <Clock className="w-3.5 h-3.5" />
+                      {exam.duration} min
+                    </span>
+                  </p>
+                </div>
+              </div>
+              <Button
+                onClick={() => router.push(`/practice/${examId}/take`)}
+                className="bg-green-600 hover:bg-green-700 text-white gap-2"
+              >
+                <Play className="w-4 h-4" />
+                Start Test
+              </Button>
+            </div>
+          </Card>
+        )}
       </main>
     </div>
   );
